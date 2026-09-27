@@ -2,11 +2,12 @@
     @if (! $botConfigured || ! $botUsername)
         <x-filament::section icon="heroicon-o-exclamation-triangle" icon-color="warning">
             <x-slot name="heading">Chưa cấu hình bot Telegram</x-slot>
-            <ol style="list-style: decimal; padding-left: 1.25rem; line-height: 1.9">
-                <li>Mở Telegram, chat với <b>@BotFather</b>, gõ <code>/newbot</code> để tạo bot và lấy token.</li>
-                <li>Điền vào file <code>.env</code>: <code>TELEGRAM_ADMIN_BOT_TOKEN</code>, <code>TELEGRAM_ADMIN_BOT_USERNAME</code> (không có @) và một chuỗi ngẫu nhiên cho <code>TELEGRAM_ADMIN_WEBHOOK_SECRET</code>.</li>
-                <li>Server có HTTPS: chạy <code>php artisan telegram:set-webhook</code>. Máy dev (Docker): chạy <code>make telegram</code>.</li>
-            </ol>
+            @if ($isAdmin)
+                <p>Tạo bot với <b>@BotFather</b> trên Telegram (gõ <code>/newbot</code>), rồi dán token vào
+                    <a href="{{ \App\Filament\Pages\Settings::getUrl() }}" style="text-decoration: underline">Cài đặt → Telegram</a>.</p>
+            @else
+                <p>Nhờ chủ tiệm (tài khoản Quản trị) cài bot ở Cài đặt → Telegram trước.</p>
+            @endif
         </x-filament::section>
     @else
         <x-filament::section>

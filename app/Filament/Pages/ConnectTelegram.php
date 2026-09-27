@@ -5,7 +5,7 @@ namespace App\Filament\Pages;
 use App\Filament\NavigationGroup;
 use App\Models\Setting;
 use App\Services\Telegram\AdminNotifier;
-use App\Services\Telegram\TelegramClient;
+use App\Services\Telegram\TelegramConfig;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -45,11 +45,11 @@ class ConnectTelegram extends Page
             Action::make('link')
                 ->label($user->hasTelegram() ? 'Kết nối lại' : 'Tạo link kết nối')
                 ->icon(Heroicon::OutlinedLink)
-                ->visible(fn () => filled(config('services.telegram.bot_username')))
+                ->visible(fn () => filled(app(TelegramConfig::class)->username()))
                 ->action(function () use ($user) {
                     $token = Str::random(32);
                     $user->forceFill(['telegram_link_token' => $token, 'telegram_link_expires_at' => now()->addMinutes(15)])->save();
-                    $this->linkUrl = 'https://t.me/'.config('services.telegram.bot_username').'?start='.$token;
+                    $this->linkUrl = 'https://t.me/'.app(TelegramConfig::class)->username().'?start='.$token;
                 }),
             Action::make('toggle')
                 ->label($user->notify_telegram ? 'Tạm tắt thông báo' : 'Bật lại thông báo')
@@ -81,8 +81,9 @@ class ConnectTelegram extends Page
     {
         return [
             'user' => auth()->user(),
-            'botConfigured' => app(TelegramClient::class)->isConfigured(),
-            'botUsername' => config('services.telegram.bot_username'),
+            'botConfigured' => app(TelegramConfig::class)->isConfigured(),
+            'botUsername' => app(TelegramConfig::class)->username(),
+            'isAdmin' => auth()->user()->role->isAdmin(),
             'groupChatId' => Setting::get('telegram.group_chat_id'),
             'recipients' => count(app(AdminNotifier::class)->chatIds()),
         ];

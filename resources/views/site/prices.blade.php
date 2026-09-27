@@ -1,4 +1,4 @@
-<x-layouts.site title="Bảng giá">
+<x-layouts.site page="prices">
     <section class="mx-auto max-w-3xl px-5 pt-16">
         <p class="eyebrow text-center">Bảng giá</p>
         <h1 class="font-display mt-4 text-center text-5xl font-medium tracking-tight md:text-6xl">Thực đơn dịch vụ</h1>

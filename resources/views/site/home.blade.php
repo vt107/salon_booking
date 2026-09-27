@@ -1,19 +1,20 @@
 @inject('shop', 'App\Support\ShopInfo')
-<x-layouts.site>
+@inject('site', 'App\Support\SiteSettings')
+<x-layouts.site page="home">
     {{-- Hero --}}
     <section class="relative overflow-hidden">
         <div class="pointer-events-none absolute -top-40 -right-40 size-[34rem] rounded-full bg-clay-soft/70 blur-3xl"></div>
         <div class="relative mx-auto grid max-w-6xl items-center gap-14 px-5 pt-16 pb-20 md:grid-cols-[1.15fr_1fr] md:pt-24">
             <div>
-                <p class="eyebrow animate-rise">Đặt lịch online · không cần chờ</p>
+                <p class="eyebrow animate-rise">{{ $site->get('hero_eyebrow') }}</p>
                 <h1 class="font-display font-display-soft mt-6 text-5xl leading-[1.02] font-medium tracking-tight animate-rise [animation-delay:80ms] sm:text-6xl md:text-7xl">
-                    Dành một giờ<br>cho <em class="text-clay">chính mình</em>.
+                    {{ $site->emphasize($site->get('hero_title')) }}
                 </h1>
                 <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-soft animate-rise [animation-delay:160ms]">
-                    Chọn dịch vụ, khung giờ và người thợ bạn tin tưởng. Tiệm xác nhận lịch trong ít phút.
+                    {{ $site->get('hero_subtitle') }}
                 </p>
                 <div class="mt-9 flex flex-wrap gap-3 animate-rise [animation-delay:240ms]">
-                    <a href="{{ route('booking.create') }}" class="btn-accent px-7 py-3.5 text-base" wire:navigate>Đặt lịch ngay</a>
+                    <a href="{{ route('booking.create') }}" class="btn-accent px-7 py-3.5 text-base" wire:navigate>{{ $site->get('hero_cta') }}</a>
                     <a href="{{ route('prices') }}" class="btn-ghost px-7 py-3.5 text-base" wire:navigate>Xem bảng giá</a>
                 </div>
                 @if ($today = $shop->todayHours())
@@ -121,8 +122,8 @@
     <section class="mx-auto max-w-6xl px-5 pt-24">
         <div class="relative overflow-hidden rounded-[2rem] bg-clay px-8 py-14 text-paper md:px-16">
             <div class="pointer-events-none absolute -right-16 -bottom-24 size-72 rounded-full border-[40px] border-paper/10"></div>
-            <h2 class="font-display relative max-w-xl text-4xl leading-tight md:text-5xl">Giữ chỗ trước, đến là được phục vụ ngay.</h2>
-            <a href="{{ route('booking.create') }}" class="btn relative mt-8 bg-paper px-7 py-3.5 text-base text-clay-dark hover:bg-cream" wire:navigate>Chọn giờ còn trống</a>
+            <h2 class="font-display relative max-w-xl text-4xl leading-tight md:text-5xl">{{ $site->emphasize($site->get('cta_title')) }}</h2>
+            <a href="{{ route('booking.create') }}" class="btn relative mt-8 bg-paper px-7 py-3.5 text-base text-clay-dark hover:bg-cream" wire:navigate>{{ $site->get('cta_button') }}</a>
         </div>
     </section>
 </x-layouts.site>

@@ -11,7 +11,7 @@ Chạy hoàn toàn bằng Docker. PHP trên máy host là 8.0 nên **không** ch
 - Test chạy trên database MySQL riêng `booking_salon_test` (không dùng SQLite, vì logic đặt lịch dùng `lockForUpdate`)
 - Tài khoản seed: `admin@salon.test` / `password`
 - Container `queue` / `scheduler` giữ code cũ trong bộ nhớ: sửa code xong chạy `make restart-workers`. Email xem ở Mailpit (:8025).
-- Bot Telegram trên máy dev: điền `TELEGRAM_ADMIN_*` trong `.env` rồi `make telegram` (long polling). Server có HTTPS: `php artisan telegram:set-webhook`.
+- Bot Telegram: admin nhập token ở Cài đặt → Telegram (lưu mã hóa bằng APP_KEY, đọc qua `TelegramConfig`; `.env` `TELEGRAM_ADMIN_*` chỉ là dự phòng). Máy dev: `make telegram` (long polling, tự nhận token mới). Server HTTPS: webhook tự bật khi lưu token, hoặc `php artisan telegram:set-webhook`. Đổi APP_KEY thì phải nhập lại token.
 - Asset website build trên host: `make assets` (hoặc `make assets-dev`). Font Fraunces + Be Vietnam Pro tự host qua `vite.config.js`, bắt buộc có subset `vietnamese`.
 
 ## Quy ước nghiệp vụ
@@ -35,6 +35,7 @@ Chạy hoàn toàn bằng Docker. PHP trên máy host là 8.0 nên **không** ch
 - Website khách: `routes/web.php` (URL tiếng Việt), controller trong `Http/Controllers/Site`, form đặt lịch là Livewire `App\Livewire\BookingWizard`. Link xem / hủy lịch của khách là signed URL (`Booking::manageUrl()`), không bao giờ lộ route không ký.
 - Thông báo: email khách (`app/Notifications/Customer`, template `resources/views/mail/booking.blade.php`) và Telegram cho chủ tiệm (`app/Services/Telegram`) đều nghe event `BookingCreated` / `BookingStatusChanged` / `BookingRescheduled` trong `app/Listeners`; không gửi trực tiếp từ BookingService. Lỗi Telegram không được làm hỏng việc đặt lịch (bắt `TelegramException`, listener chạy trong queue).
 - Báo cáo doanh thu: số liệu tính trong `App\Services\Reports\RevenueReport` (có test), widget trong `Filament/Widgets/Revenue` chỉ hiển thị; biểu đồ một màu `#e11d48` (đạt tương phản cả nền sáng lẫn tối), không dùng pie / hai trục. Dashboard chính khai báo widget tường minh trong `Filament/Pages/Dashboard.php`.
+- Nội dung / SEO website khách (tiêu đề, mô tả, hero, logo, favicon, ảnh chia sẻ, màu nhấn, thanh thông báo, GA / Pixel, noindex) đọc qua `App\Support\SiteSettings` (nhóm settings `site.*`, có mặc định); văn bản admin nhập luôn escape, `*chữ*` thành nhấn mạnh qua `emphasize()`.
 - Link gửi ra ngoài (mã QR in, nút Telegram) phụ thuộc APP_URL: kiểm tra bằng `App\Support\AppUrl::isPublic()`.
 - Livewire 4: không đặt tên computed / property trùng tính năng có sẵn (vd `slots`), sẽ lỗi 500 ở request cập nhật.
 - Grid có phần tử cuộn ngang phải có `min-w-0` ở cột, nếu không cả trang bị giãn trên điện thoại.

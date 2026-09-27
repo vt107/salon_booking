@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Staff;
+use App\Support\SiteSettings;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -33,6 +35,18 @@ class PageController extends Controller
                 ->orderBy('sort_order')
                 ->get(),
         ]);
+    }
+
+    public function sitemap(SiteSettings $site): Response
+    {
+        $urls = $site->get('noindex') ? [] : [route('home'), route('prices'), route('team'), route('booking.create')];
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n"
+            .'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n"
+            .collect($urls)->map(fn (string $url) => '  <url><loc>'.e($url).'</loc></url>')->implode("\n")."\n"
+            .'</urlset>';
+
+        return response($xml, 200, ['Content-Type' => 'application/xml']);
     }
 
     private function categories()

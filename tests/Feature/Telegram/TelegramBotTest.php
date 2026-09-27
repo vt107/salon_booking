@@ -43,9 +43,11 @@ class TelegramBotTest extends TestCase
             'services.telegram.webhook_secret' => 'shh',
         ]);
         Setting::set('telegram.group_chat_id', (string) self::GROUP);
-        Http::fake(fn (Request $request) => str_ends_with($request->url(), '/getUpdates')
-            ? Http::response(['ok' => true, 'result' => $this->pendingUpdates])
-            : Http::response(['ok' => true, 'result' => ['message_id' => 555]]));
+        Http::fake(fn (Request $request) => match (true) {
+            str_ends_with($request->url(), '/getUpdates') => Http::response(['ok' => true, 'result' => $this->pendingUpdates]),
+            str_ends_with($request->url(), '/getMe') => Http::response(['ok' => true, 'result' => ['id' => 1, 'username' => 'salon_bot']]),
+            default => Http::response(['ok' => true, 'result' => ['message_id' => 555]]),
+        });
 
         $this->manager = User::factory()->create(['role' => UserRole::Manager, 'name' => 'Chị Lan', 'telegram_user_id' => 42]);
     }

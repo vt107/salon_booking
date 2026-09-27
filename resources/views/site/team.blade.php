@@ -1,4 +1,4 @@
-<x-layouts.site title="Đội ngũ">
+<x-layouts.site page="team">
     <section class="mx-auto max-w-6xl px-5 pt-16">
         <p class="eyebrow">Đội ngũ</p>
         <h1 class="font-display mt-4 max-w-2xl text-5xl font-medium tracking-tight md:text-6xl">Những đôi tay <em class="text-clay">khéo léo</em> của tiệm</h1>

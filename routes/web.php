@@ -11,6 +11,7 @@ Route::get('/bang-gia', [PageController::class, 'prices'])->name('prices');
 Route::get('/doi-ngu', [PageController::class, 'team'])->name('team');
 
 Route::get('/dat-lich', [BookingController::class, 'create'])->name('booking.create');
+Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 Route::get('/q/{code}', QrRedirectController::class)->name('qr.redirect');
 
 // Link riêng có chữ ký gửi cho khách qua email

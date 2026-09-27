@@ -2,52 +2,46 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Telegram\TelegramClient;
+use App\Services\Telegram\TelegramConfig;
+use App\Services\Telegram\TelegramException;
+use App\Services\Telegram\TelegramSetup;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 #[Signature('telegram:set-webhook {--delete : Gỡ webhook} {--info : Chỉ xem trạng thái}')]
-#[Description('Đăng ký webhook Telegram trỏ về /telegram/webhook (cần APP_URL là https công khai)')]
+#[Description('Đăng ký webhook Telegram (cũng làm được ở Admin → Cài đặt → Telegram)')]
 class TelegramSetWebhook extends Command
 {
-    public function handle(TelegramClient $telegram): int
+    public function handle(TelegramConfig $config, TelegramSetup $setup): int
     {
-        $bot = $telegram->getMe();
-        $this->info("Bot: @{$bot['username']}");
+        if (! $config->isConfigured()) {
+            $this->error('Chưa có token bot: nhập ở Admin → Cài đặt → Telegram (hoặc TELEGRAM_ADMIN_BOT_TOKEN trong .env).');
 
-        if ($this->option('info')) {
-            $info = $telegram->getWebhookInfo();
-            $this->line('Webhook: '.($info['url'] ?: '(chưa đặt)'));
-            $this->line('Update chờ xử lý: '.($info['pending_update_count'] ?? 0));
-            if (! empty($info['last_error_message'])) {
-                $this->warn('Lỗi gần nhất: '.$info['last_error_message']);
+            return self::FAILURE;
+        }
+
+        try {
+            if ($this->option('delete')) {
+                $setup->disableWebhook();
+                $this->info('Đã gỡ webhook.');
+            } elseif (! $this->option('info')) {
+                $this->info('Đã đặt webhook: '.$setup->enableWebhook());
             }
 
-            return self::SUCCESS;
-        }
-
-        if ($this->option('delete')) {
-            $telegram->deleteWebhook();
-            $this->info('Đã gỡ webhook.');
-
-            return self::SUCCESS;
-        }
-
-        $url = route('telegram.webhook');
-        if (! str_starts_with($url, 'https://')) {
-            $this->error("Webhook cần HTTPS công khai, hiện là {$url}. Trên máy dev hãy dùng: php artisan telegram:poll");
-
-            return self::FAILURE;
-        }
-        if (blank(config('services.telegram.webhook_secret'))) {
-            $this->error('Thiếu TELEGRAM_ADMIN_WEBHOOK_SECRET trong .env');
+            $status = $setup->status();
+        } catch (TelegramException $e) {
+            $this->error($e->getMessage());
 
             return self::FAILURE;
         }
 
-        $telegram->setWebhook($url, config('services.telegram.webhook_secret'));
-        $this->info("Đã đặt webhook: {$url}");
+        $this->line("Bot: @{$status['bot']}");
+        $this->line('Webhook: '.($status['webhook'] ?? '(chưa đặt)'));
+        $this->line("Update chờ xử lý: {$status['pending']}");
+        if ($status['last_error']) {
+            $this->warn("Lỗi gần nhất: {$status['last_error']}");
+        }
 
         return self::SUCCESS;
     }
