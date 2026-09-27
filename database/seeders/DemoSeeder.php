@@ -6,6 +6,7 @@ use App\Enums\BookingSource;
 use App\Enums\BookingStatus;
 use App\Enums\CancelledBy;
 use App\Enums\PaymentMethod;
+use App\Enums\UserRole;
 use App\Enums\VoucherScope;
 use App\Enums\VoucherType;
 use App\Models\Booking;
@@ -42,6 +43,7 @@ class DemoSeeder extends Seeder
     public function run(): void
     {
         $this->admin = User::where('email', 'admin@salon.test')->firstOrFail();
+        $this->seedDemoAccounts();
         $this->customers = Customer::factory(60)->create();
         $this->seedVouchersAndQrCodes();
 
@@ -61,6 +63,23 @@ class DemoSeeder extends Seeder
         foreach ($this->qrCodes as $qr) {
             $qr->forceFill(['scan_count' => $qr->bookings()->count() * fake()->numberBetween(2, 4)])->save();
         }
+    }
+
+    /** Tài khoản thử phân quyền: quản lý (duyệt lịch) và nhân viên gắn với một thợ */
+    private function seedDemoAccounts(): void
+    {
+        User::firstOrCreate(['email' => 'quanly@salon.test'], [
+            'name' => 'Chị Lan (quản lý)',
+            'password' => 'password',
+            'role' => UserRole::Manager,
+        ]);
+
+        $staffUser = User::firstOrCreate(['email' => 'nhanvien@salon.test'], [
+            'name' => 'Hoàng Nam',
+            'password' => 'password',
+            'role' => UserRole::Staff,
+        ]);
+        Staff::where('slug', 'hoang-nam')->update(['user_id' => $staffUser->id]);
     }
 
     private function seedVouchersAndQrCodes(): void
