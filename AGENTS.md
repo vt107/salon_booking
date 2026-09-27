@@ -34,6 +34,8 @@ Chạy hoàn toàn bằng Docker. PHP trên máy host là 8.0 nên **không** ch
 - View Blade tự viết cho Filament dùng CSS riêng trong view (vd `filament/pages/schedule.blade.php`): Tailwind của Filament không có class tùy ý nếu chưa dựng theme.
 - Website khách: `routes/web.php` (URL tiếng Việt), controller trong `Http/Controllers/Site`, form đặt lịch là Livewire `App\Livewire\BookingWizard`. Link xem / hủy lịch của khách là signed URL (`Booking::manageUrl()`), không bao giờ lộ route không ký.
 - Thông báo: email khách (`app/Notifications/Customer`, template `resources/views/mail/booking.blade.php`) và Telegram cho chủ tiệm (`app/Services/Telegram`) đều nghe event `BookingCreated` / `BookingStatusChanged` / `BookingRescheduled` trong `app/Listeners`; không gửi trực tiếp từ BookingService. Lỗi Telegram không được làm hỏng việc đặt lịch (bắt `TelegramException`, listener chạy trong queue).
+- Báo cáo doanh thu: số liệu tính trong `App\Services\Reports\RevenueReport` (có test), widget trong `Filament/Widgets/Revenue` chỉ hiển thị; biểu đồ một màu `#e11d48` (đạt tương phản cả nền sáng lẫn tối), không dùng pie / hai trục. Dashboard chính khai báo widget tường minh trong `Filament/Pages/Dashboard.php`.
+- Link gửi ra ngoài (mã QR in, nút Telegram) phụ thuộc APP_URL: kiểm tra bằng `App\Support\AppUrl::isPublic()`.
 - Livewire 4: không đặt tên computed / property trùng tính năng có sẵn (vd `slots`), sẽ lỗi 500 ở request cập nhật.
 - Grid có phần tử cuộn ngang phải có `min-w-0` ở cột, nếu không cả trang bị giãn trên điện thoại.
 - Test dùng attribute PHPUnit 12 (`#[DataProvider]`), không dùng docblock. `tests/Concerns/BuildsSalon` dựng tiệm mẫu, "hôm nay" = thứ Hai 05/10/2026 07:00.

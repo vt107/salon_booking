@@ -7,10 +7,12 @@ use App\Enums\UserRole;
 use App\Enums\VoucherScope;
 use App\Enums\VoucherType;
 use App\Filament\Pages\ConnectTelegram;
+use App\Filament\Pages\Revenue;
 use App\Filament\Pages\Schedule;
 use App\Filament\Pages\Settings;
 use App\Filament\Resources\Bookings\BookingResource;
 use App\Filament\Resources\Customers\CustomerResource;
+use App\Filament\Resources\QrCodes\QrCodeResource;
 use App\Filament\Resources\ServiceCategories\ServiceCategoryResource;
 use App\Filament\Resources\Services\ServiceResource;
 use App\Filament\Resources\Staff\Pages\EditStaff;
@@ -67,6 +69,8 @@ class AdminPagesTest extends TestCase
             'tài khoản' => [fn () => UserResource::getUrl('index'), [UserRole::Admin]],
             'cài đặt' => [fn () => Settings::getUrl(), [UserRole::Admin]],
             'kết nối telegram' => [fn () => ConnectTelegram::getUrl(), $managers],
+            'doanh thu' => [fn () => Revenue::getUrl(), $managers],
+            'mã QR' => [fn () => QrCodeResource::getUrl('index'), $managers],
         ];
     }
 

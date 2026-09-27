@@ -56,6 +56,11 @@ class DemoSeeder extends Seeder
         });
 
         $this->refreshCustomerStats();
+
+        // Lượt quét nhiều hơn số lịch đặt được từ mã đó (không phải ai quét cũng đặt)
+        foreach ($this->qrCodes as $qr) {
+            $qr->forceFill(['scan_count' => $qr->bookings()->count() * fake()->numberBetween(2, 4)])->save();
+        }
     }
 
     private function seedVouchersAndQrCodes(): void

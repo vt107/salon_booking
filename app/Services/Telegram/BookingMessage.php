@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Enums\CancelledBy;
 use App\Filament\Resources\Bookings\BookingResource;
 use App\Models\Booking;
+use App\Support\AppUrl;
 use App\Support\Money;
 
 /**
@@ -103,15 +104,9 @@ class BookingMessage
         return $rows;
     }
 
-    /** Telegram từ chối nút URL trỏ tới localhost / IP nội bộ, nên chỉ thêm khi APP_URL là tên miền thật */
+    /** Telegram từ chối nút URL trỏ tới localhost / IP nội bộ */
     private function adminUrl(Booking $booking): ?string
     {
-        $host = parse_url(config('app.url'), PHP_URL_HOST) ?? '';
-
-        if (! str_contains($host, '.') || filter_var($host, FILTER_VALIDATE_IP) || str_ends_with($host, '.test') || str_ends_with($host, '.local')) {
-            return null;
-        }
-
-        return BookingResource::getUrl('view', ['record' => $booking], panel: 'admin');
+        return AppUrl::isPublic() ? BookingResource::getUrl('view', ['record' => $booking], panel: 'admin') : null;
     }
 }

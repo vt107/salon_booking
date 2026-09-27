@@ -18,6 +18,24 @@ class QrCode extends Model
         ];
     }
 
+    // Bỏ ký tự dễ nhầm khi gõ tay: 0/O, 1/I/L
+    private const CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+
+    public static function generateCode(int $length = 6): string
+    {
+        do {
+            $code = collect(range(1, $length))->map(fn () => self::CODE_ALPHABET[random_int(0, strlen(self::CODE_ALPHABET) - 1)])->implode('');
+        } while (static::where('code', $code)->exists());
+
+        return $code;
+    }
+
+    /** Link in trên mã QR */
+    public function url(): string
+    {
+        return route('qr.redirect', ['code' => $this->code]);
+    }
+
     public function staff(): BelongsTo
     {
         return $this->belongsTo(Staff::class);
