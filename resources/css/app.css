@@ -4,6 +4,53 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: var(--font-be-vietnam-pro), ui-sans-serif, system-ui, sans-serif;
+    --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
+
+    /* Bảng màu "tiệm ấm": nền kem, chữ mực nâu, điểm nhấn đất nung */
+    --color-cream: #f6f1ea;
+    --color-paper: #fcfaf6;
+    --color-sand: #e8ddcf;
+    --color-sand-deep: #d6c6b2;
+    --color-ink: #1f1916;
+    --color-ink-soft: #5e524b;
+    --color-ink-faint: #9a8d84;
+    --color-clay: #b4533a;
+    --color-clay-dark: #8e3e2a;
+    --color-clay-soft: #f1ddd3;
+    --color-sage: #5f7058;
+    --color-sage-soft: #e1e7dc;
+
+    --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: none; }
+    }
 }
+
+@layer base {
+    html { -webkit-tap-highlight-color: transparent; }
+
+    body {
+        @apply bg-cream font-sans text-ink antialiased;
+        /* Hạt nhiễu rất nhẹ cho cảm giác giấy in */
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+    }
+
+    :focus-visible { @apply outline-2 outline-offset-2 outline-clay; }
+}
+
+@utility font-display-soft { font-optical-sizing: auto; font-variation-settings: 'SOFT' 50; }
+
+@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition duration-200 disabled:cursor-not-allowed disabled:opacity-40; }
+@utility btn-primary { @apply btn bg-ink text-cream hover:bg-clay; }
+@utility btn-accent { @apply btn bg-clay text-paper hover:bg-clay-dark; }
+@utility btn-ghost { @apply btn border border-ink/15 text-ink hover:border-ink/40 hover:bg-paper; }
+
+@utility eyebrow { @apply text-xs font-medium tracking-[0.2em] text-clay uppercase; }
+
+@utility field { @apply w-full rounded-xl border border-sand-deep bg-paper px-4 py-3 text-[15px] text-ink placeholder:text-ink-faint transition focus:border-clay focus:ring-4 focus:ring-clay/10 focus:outline-none; }
+
+/* Đường chấm dẫn trong bảng giá kiểu menu */
+@utility leader { @apply mx-3 flex-1 -translate-y-[0.3em] border-b border-dotted border-ink/25; }

@@ -8,9 +8,16 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
+            // Cả hai font đều có bộ dấu tiếng Việt; phải khai báo subset 'vietnamese'
             fonts: [
-                bunny('Instrument Sans', {
+                bunny('Fraunces', {
                     weights: [400, 500, 600],
+                    styles: ['normal', 'italic'],
+                    subsets: ['latin', 'latin-ext', 'vietnamese'],
+                }),
+                bunny('Be Vietnam Pro', {
+                    weights: [400, 500, 600],
+                    subsets: ['latin', 'latin-ext', 'vietnamese'],
                 }),
             ],
         }),

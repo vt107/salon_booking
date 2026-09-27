@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
 
 #[Fillable([
     'code', 'customer_id', 'staff_id', 'start_at', 'end_at', 'occupied_until',
@@ -48,6 +49,14 @@ class Booking extends Model
             'completed_at' => 'datetime',
             'reminder_sent_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Link riêng để khách xem / hủy lịch (gửi trong email). Có chữ ký nên không đoán được từ mã booking.
+     */
+    public function manageUrl(): string
+    {
+        return URL::signedRoute('booking.show', ['booking' => $this->code]);
     }
 
     public function customer(): BelongsTo

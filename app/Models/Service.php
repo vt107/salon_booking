@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +29,14 @@ class Service extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
         ];
+    }
+
+    /** "150.000đ" hoặc khoảng giá "150.000đ – 250.000đ" */
+    public function priceLabel(): string
+    {
+        return $this->price_max
+            ? Money::format($this->price).' – '.Money::format($this->price_max)
+            : Money::format($this->price);
     }
 
     public function category(): BelongsTo

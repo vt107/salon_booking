@@ -1,5 +1,5 @@
 # Lệnh tắt cho môi trường Docker. Ví dụ: make artisan c="route:list"
-.PHONY: up down build shell artisan composer test fresh logs
+.PHONY: up down build shell artisan composer test fresh logs assets assets-dev
 
 up:
 	docker compose up -d
@@ -27,3 +27,10 @@ fresh:
 
 logs:
 	docker compose logs -f app queue scheduler
+
+# Asset website (Tailwind v4 + Vite) build trên máy host: cần Node 22+
+assets:
+	npm run build
+
+assets-dev:
+	npm run dev

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Services\Tables;
 
 use App\Models\Service;
-use App\Support\Money;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -30,9 +29,7 @@ class ServicesTable
                 TextColumn::make('price')
                     ->label('Giá')
                     ->sortable()
-                    ->formatStateUsing(fn (Service $record) => $record->price_max
-                        ? Money::format($record->price).' – '.Money::format($record->price_max)
-                        : Money::format($record->price)),
+                    ->formatStateUsing(fn (Service $record) => $record->priceLabel()),
                 TextColumn::make('duration_minutes')
                     ->label('Thời lượng')
                     ->sortable()
