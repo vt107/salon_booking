@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Enums\UserRole;
 use App\Enums\VoucherScope;
 use App\Enums\VoucherType;
+use App\Filament\Pages\ConnectTelegram;
 use App\Filament\Pages\Schedule;
 use App\Filament\Pages\Settings;
 use App\Filament\Resources\Bookings\BookingResource;
@@ -65,6 +66,7 @@ class AdminPagesTest extends TestCase
             'thêm voucher' => [fn () => VoucherResource::getUrl('create'), $managers],
             'tài khoản' => [fn () => UserResource::getUrl('index'), [UserRole::Admin]],
             'cài đặt' => [fn () => Settings::getUrl(), [UserRole::Admin]],
+            'kết nối telegram' => [fn () => ConnectTelegram::getUrl(), $managers],
         ];
     }
 
@@ -199,5 +201,18 @@ class AdminPagesTest extends TestCase
             ->assertNotified('Có 1 lịch hẹn trong thời gian nghỉ này');
 
         $this->assertSame('Ốm', $this->tuan->timeOffs()->sole()->reason);
+    }
+
+    public function test_manager_generates_a_one_time_telegram_link(): void
+    {
+        config(['services.telegram.bot_token' => 'T', 'services.telegram.bot_username' => 'salon_bot']);
+        $manager = User::factory()->create(['role' => UserRole::Manager]);
+        $this->actingAs($manager);
+
+        Livewire::test(ConnectTelegram::class)
+            ->callAction('link')
+            ->assertSee('https://t.me/salon_bot?start='.$manager->fresh()->telegram_link_token);
+
+        $this->assertTrue($manager->fresh()->telegram_link_expires_at->between(now()->addMinutes(14), now()->addMinutes(15)));
     }
 }

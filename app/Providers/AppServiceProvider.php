@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Telegram\TelegramClient;
 use Filament\Resources\Resource;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // bind (không singleton): đọc config lúc dùng, test đổi token được
+        $this->app->bind(TelegramClient::class, fn () => new TelegramClient(config('services.telegram.bot_token')));
     }
 
     /**

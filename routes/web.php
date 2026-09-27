@@ -3,6 +3,7 @@
 use App\Http\Controllers\Site\BookingController;
 use App\Http\Controllers\Site\PageController;
 use App\Http\Controllers\Site\QrRedirectController;
+use App\Http\Controllers\Telegram\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -19,3 +20,7 @@ Route::middleware('signed')->group(function () {
         ->middleware('throttle:10,1')
         ->name('booking.cancel');
 });
+
+Route::post('/telegram/webhook', WebhookController::class)
+    ->middleware('throttle:120,1')
+    ->name('telegram.webhook');

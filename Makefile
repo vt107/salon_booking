@@ -1,5 +1,5 @@
 # Lệnh tắt cho môi trường Docker. Ví dụ: make artisan c="route:list"
-.PHONY: up down build shell artisan composer test fresh logs assets assets-dev
+.PHONY: up down build shell artisan composer test fresh logs assets assets-dev telegram restart-workers
 
 up:
 	docker compose up -d
@@ -34,3 +34,12 @@ assets:
 
 assets-dev:
 	npm run dev
+
+# Bot Telegram trên máy dev (long polling thay cho webhook)
+telegram:
+	docker compose --profile telegram up -d telegram
+
+# queue / scheduler / telegram giữ code cũ trong bộ nhớ: chạy sau khi sửa code
+restart-workers:
+	docker compose restart queue scheduler
+	-docker compose --profile telegram restart telegram

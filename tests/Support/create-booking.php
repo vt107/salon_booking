@@ -18,7 +18,10 @@ $app->make(Kernel::class)->bootstrap();
 
 [, $phone, $startAt, $serviceId, $staffId, $goAt] = $argv;
 
-time_sleep_until((float) $goAt);
+// Máy chậm có thể khởi động xong sau mốc: time_sleep_until() với mốc đã qua phát warning => exception
+if ((float) $goAt > microtime(true)) {
+    time_sleep_until((float) $goAt);
+}
 
 try {
     $booking = app(BookingService::class)->create(new BookingData(

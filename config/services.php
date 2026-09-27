@@ -28,6 +28,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Bot Telegram nội bộ: báo lịch mới cho chủ tiệm / quản lý, có nút duyệt
+    'telegram' => [
+        'bot_token' => env('TELEGRAM_ADMIN_BOT_TOKEN'),
+        'bot_username' => env('TELEGRAM_ADMIN_BOT_USERNAME'),
+        'webhook_secret' => env('TELEGRAM_ADMIN_WEBHOOK_SECRET'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

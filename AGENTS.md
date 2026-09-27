@@ -10,6 +10,8 @@ Chạy hoàn toàn bằng Docker. PHP trên máy host là 8.0 nên **không** ch
 - `make artisan c="..."`, `make composer c="..."`, `make test`, `make fresh` (migrate:fresh --seed)
 - Test chạy trên database MySQL riêng `booking_salon_test` (không dùng SQLite, vì logic đặt lịch dùng `lockForUpdate`)
 - Tài khoản seed: `admin@salon.test` / `password`
+- Container `queue` / `scheduler` giữ code cũ trong bộ nhớ: sửa code xong chạy `make restart-workers`. Email xem ở Mailpit (:8025).
+- Bot Telegram trên máy dev: điền `TELEGRAM_ADMIN_*` trong `.env` rồi `make telegram` (long polling). Server có HTTPS: `php artisan telegram:set-webhook`.
 - Asset website build trên host: `make assets` (hoặc `make assets-dev`). Font Fraunces + Be Vietnam Pro tự host qua `vite.config.js`, bắt buộc có subset `vietnamese`.
 
 ## Quy ước nghiệp vụ
@@ -31,6 +33,7 @@ Chạy hoàn toàn bằng Docker. PHP trên máy host là 8.0 nên **không** ch
 - Admin (Filament 5): phân quyền bằng Policy trong `app/Policies` (admin / manager / staff, xem `UserRole`); trang riêng dùng `canAccess()`. Thao tác booking dùng chung `Filament/Resources/Bookings/Actions/BookingActions` cho bảng, trang chi tiết và widget.
 - View Blade tự viết cho Filament dùng CSS riêng trong view (vd `filament/pages/schedule.blade.php`): Tailwind của Filament không có class tùy ý nếu chưa dựng theme.
 - Website khách: `routes/web.php` (URL tiếng Việt), controller trong `Http/Controllers/Site`, form đặt lịch là Livewire `App\Livewire\BookingWizard`. Link xem / hủy lịch của khách là signed URL (`Booking::manageUrl()`), không bao giờ lộ route không ký.
+- Thông báo: email khách (`app/Notifications/Customer`, template `resources/views/mail/booking.blade.php`) và Telegram cho chủ tiệm (`app/Services/Telegram`) đều nghe event `BookingCreated` / `BookingStatusChanged` / `BookingRescheduled` trong `app/Listeners`; không gửi trực tiếp từ BookingService. Lỗi Telegram không được làm hỏng việc đặt lịch (bắt `TelegramException`, listener chạy trong queue).
 - Livewire 4: không đặt tên computed / property trùng tính năng có sẵn (vd `slots`), sẽ lỗi 500 ở request cập nhật.
 - Grid có phần tử cuộn ngang phải có `min-w-0` ở cột, nếu không cả trang bị giãn trên điện thoại.
 - Test dùng attribute PHPUnit 12 (`#[DataProvider]`), không dùng docblock. `tests/Concerns/BuildsSalon` dựng tiệm mẫu, "hôm nay" = thứ Hai 05/10/2026 07:00.

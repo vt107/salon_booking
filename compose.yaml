@@ -28,6 +28,13 @@ services:
     command: php artisan schedule:work
     restart: unless-stopped
 
+  # Bot Telegram trên máy dev (không có URL public cho webhook): docker compose --profile telegram up -d
+  telegram:
+    <<: *app
+    command: php artisan telegram:poll
+    restart: unless-stopped
+    profiles: [telegram]
+
   mysql:
     image: mysql:8.4
     environment:
