@@ -6,6 +6,7 @@ use App\Filament\NavigationGroup;
 use App\Models\Setting;
 use App\Services\Telegram\AdminNotifier;
 use App\Services\Telegram\TelegramConfig;
+use App\Support\Demo\DemoMode;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -70,6 +71,7 @@ class ConnectTelegram extends Page
                 ->color('gray')
                 ->visible(fn () => app(AdminNotifier::class)->isEnabled())
                 ->action(function () {
+                    DemoMode::abortIfEnabled();
                     app(AdminNotifier::class)->broadcast('👋 Tin nhắn thử từ <b>'.e(Setting::get('shop.name', config('app.name'))).'</b>. Thông báo lịch hẹn sẽ đến đây.');
                     Notification::make()->success()->title('Đã gửi tin thử')->send();
                 }),

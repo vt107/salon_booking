@@ -2,6 +2,7 @@
 
 namespace App\Services\Telegram;
 
+use App\Support\Demo\DemoMode;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
@@ -28,6 +29,11 @@ class TelegramClient
     {
         if (! $this->isConfigured()) {
             throw new TelegramException('Chưa cấu hình TELEGRAM_ADMIN_BOT_TOKEN.');
+        }
+
+        // Bản demo: token là giá trị giả, không gọi Telegram (kể cả từ scheduler / queue)
+        if (DemoMode::enabled()) {
+            throw new TelegramException("{$method}: bản demo không kết nối Telegram.");
         }
 
         try {

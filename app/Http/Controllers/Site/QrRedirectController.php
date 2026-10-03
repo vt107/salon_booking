@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
 use App\Models\QrCode;
+use App\Support\Demo\DemoMode;
 use Illuminate\Http\RedirectResponse;
 
 /**
@@ -20,7 +21,10 @@ class QrRedirectController extends Controller
             return redirect()->route('booking.create');
         }
 
-        $qr->increment('scan_count');
+        // Bản demo chỉ xem: vẫn mở form đặt lịch, không đếm lượt quét
+        if (! DemoMode::guarding()) {
+            $qr->increment('scan_count');
+        }
         session(['booking.qr_code_id' => $qr->id]);
 
         return redirect()->route('booking.create', array_filter([

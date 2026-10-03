@@ -10,6 +10,7 @@ use App\Services\Booking\BookingSettings;
 use App\Services\Telegram\TelegramConfig;
 use App\Services\Telegram\TelegramException;
 use App\Services\Telegram\TelegramSetup;
+use App\Support\Demo\DemoMode;
 use App\Support\SiteSettings;
 use App\Support\Weekday;
 use BackedEnum;
@@ -123,6 +124,9 @@ class Settings extends Page
 
     public function save(): void
     {
+        // Lưu token sẽ gọi Telegram trước khi ghi database
+        DemoMode::abortIfEnabled();
+
         $data = $this->form->getState();
 
         // Token mới: kiểm tra với Telegram trước khi lưu bất cứ thứ gì
@@ -436,6 +440,7 @@ class Settings extends Page
                             ->requiresConfirmation()
                             ->modalDescription('Bot sẽ ngừng gửi thông báo. Tài khoản admin đã liên kết vẫn được giữ, nhập lại token cùng bot là dùng tiếp.')
                             ->action(function () {
+                                DemoMode::abortIfEnabled();
                                 app(TelegramConfig::class)->forget();
                                 Notification::make()->success()->title('Đã xóa cấu hình bot')->send();
                             }),
@@ -477,6 +482,8 @@ class Settings extends Page
 
     private function checkBot(): void
     {
+        DemoMode::abortIfEnabled();
+
         try {
             $status = app(TelegramSetup::class)->status();
         } catch (TelegramException $e) {
@@ -499,6 +506,8 @@ class Settings extends Page
     /** @param  Closure(TelegramSetup): string  $callback */
     private function runSetup(Closure $callback): void
     {
+        DemoMode::abortIfEnabled();
+
         try {
             Notification::make()->success()->title($callback(app(TelegramSetup::class)))->send();
         } catch (TelegramException $e) {

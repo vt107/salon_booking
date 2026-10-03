@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Support\Demo\DemoMode;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -22,7 +23,8 @@ class DatabaseSeeder extends Seeder
             StaffSeeder::class,
         ]);
 
-        if (app()->isLocal()) {
+        // Máy dev và bản demo chỉ xem (DEMO_MODE=true, demo:reset) có dữ liệu mẫu đầy đủ
+        if (app()->isLocal() || DemoMode::enabled()) {
             $this->call(DemoSeeder::class);
         }
     }

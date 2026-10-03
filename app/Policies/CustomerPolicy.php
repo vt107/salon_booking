@@ -27,8 +27,8 @@ class CustomerPolicy
         return true;
     }
 
-    /** Chặn / bỏ chặn khách đặt online */
-    public function block(User $user, Customer $customer): bool
+    /** Chặn / bỏ chặn khách đặt online (form thêm khách gọi không kèm bản ghi) */
+    public function block(User $user, ?Customer $customer = null): bool
     {
         return $user->role->canManageCatalog();
     }

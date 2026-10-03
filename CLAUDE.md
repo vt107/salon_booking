@@ -14,6 +14,16 @@ Chạy hoàn toàn bằng Docker. PHP trên máy host là 8.0 nên **không** ch
 - Bot Telegram: admin nhập token ở Cài đặt → Telegram (lưu mã hóa bằng APP_KEY, đọc qua `TelegramConfig`; `.env` `TELEGRAM_ADMIN_*` chỉ là dự phòng). Máy dev: `make telegram` (long polling, tự nhận token mới). Server HTTPS: webhook tự bật khi lưu token, hoặc `php artisan telegram:set-webhook`. Đổi APP_KEY thì phải nhập lại token.
 - Asset website build trên host: `make assets` (hoặc `make assets-dev`). Font Fraunces + Be Vietnam Pro tự host qua `vite.config.js`, bắt buộc có subset `vietnamese`.
 
+## Chế độ demo (chỉ xem)
+
+Bản giới thiệu cho khách xem: `DEMO_MODE=true` trong `.env` (cấu hình ở `config/demo.php`, code ở `app/Support/Demo`).
+
+- Mọi lệnh ghi SQL từ request web bị chặn (trừ `sessions`, `cache`); form POST bị chặn trước controller; Livewire / Filament hiện toast thay vì lỗi. Artisan, queue, scheduler, test không bị chặn.
+- Nút "Demo" nổi ở góc trái dưới mọi trang (kể cả admin): danh sách khu vực + tài khoản điền sẵn. Tài khoản (mật khẩu `password`): `admin@salon.test` (chủ tiệm), `quanly@salon.test` (quản lý), `nhanvien@salon.test` (thợ Hoàng Nam). `/demo/switch/{key}` đổi vai trò, `/demo/lich-hen` mở trang lịch hẹn của khách (link có chữ ký).
+- `php artisan demo:reset --force`: migrate:fresh + `DemoSeeder` (~40 giây: 90 ngày lịch sử, 14 ngày tới, đủ mọi trạng thái). Scheduler tự reset lúc `DEMO_RESET_AT` (mặc định 04:00) và chạy `demo:tick` 5 phút một lần để lịch hôm nay check-in / hoàn thành theo giờ thực. Lịch chờ duyệt được seed từ ngày mai, hạn duyệt sau lần reset kế tiếp nên không bị `bookings:expire-pending` hủy trong ngày.
+- Ở demo: Telegram không gọi API (token trong seed là giả, `TelegramClient` tự chặn), không gửi email nhắc lịch, webhook trả 403, quét mã QR không đếm lượt, công tắc trong bảng admin bị khóa.
+- Thêm tính năng mới: thao tác có tác dụng phụ ngoài database (gọi API, gửi tin, ghi file, xóa cache) phải gọi `DemoMode::abortIfEnabled()` ở đầu action; trang GET không được ghi database (cần ghi thì `DemoMode::guarding()` / `DemoMode::bypass()` kèm lý do); bổ sung dữ liệu mẫu trong `DemoSeeder` để tính năng có gì để xem. `phpunit.xml` đặt `DEMO_MODE=false`; test chế độ demo ở `tests/Feature/DemoModeTest.php`.
+
 ## Quy ước nghiệp vụ
 
 - Mọi booking web / Telegram đều `pending` và **admin duyệt tay**. `pending` vẫn giữ chỗ của thợ cho tới `approval_deadline_at`.

@@ -13,6 +13,7 @@ use App\Services\Booking\BookingException;
 use App\Services\Booking\BookingService;
 use App\Services\Voucher\VoucherException;
 use App\Services\Voucher\VoucherService;
+use App\Support\Demo\DemoMode;
 use App\Support\PhoneNumber;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Carbon;
@@ -198,6 +199,9 @@ class BookingWizard extends Component
 
             return;
         }
+
+        // Bản demo: kiểm tra form như thật rồi dừng trước khi tính lượt gửi
+        DemoMode::abortIfEnabled();
 
         $key = 'booking-submit:'.request()->ip();
         if (RateLimiter::tooManyAttempts($key, self::MAX_SUBMITS)) {
